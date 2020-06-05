@@ -11,17 +11,33 @@ const cancelAddMovieButton = addMovieModal.querySelector('.btn--passive');
 const confirmAddMovieButton = cancelAddMovieButton.nextElementSibling;
 const userInputs = addMovieModal.querySelectorAll('input');
 // const userInputs = addMovieModal.getElementsByTagName('input');
-const entryTextSection = document.getElementById('entry-text')
+const entryTextSection = document.getElementById('entry-text');
 
 // ---- 3. FUNCTIONALITY LOGIC ------
 
 // 3.1. declaring state
 const movies = [];
 
-const renderNewMovieElement = (title, imageUrl, rating) => {
-    const newMovieElement = document.createElement('li')
-    newMovieElement.className = 'movie-element';
-    newMovieElement.innerHTML = `
+const deleteMovieHandler = (movieId) => {
+  // find the index from the movies array which it will the the random generated id
+  let movieIndex = 0;
+  for (const movie of movies) {
+    if (movie.id === movieId) {
+      break;
+    }
+    movieIndex++;
+  }
+console.log(movieIndex)
+  // remove the movie
+  movies.splice(movieIndex, 1);
+  const listRoot = document.getElementById('movie-list');
+  listRoot.children[movieIndex].remove();
+  // listRoot.removeChild(listRoot.children[movieIndex])
+}
+const renderNewMovieElement = (id, title, imageUrl, rating) => {
+  const newMovieElement = document.createElement('li');
+  newMovieElement.className = 'movie-element';
+  newMovieElement.innerHTML = `
         <div class='movie-element__image'>
             <img src="${imageUrl}" alt=${title}/>
         </div>
@@ -30,20 +46,21 @@ const renderNewMovieElement = (title, imageUrl, rating) => {
             <p>${rating}/5 stars</p>
         </div>
     `;
-
-    // selecting the parent element
-    const listRoot = document.getElementById('movie-list')
-    // insert the newly created element into the parent
-    listRoot.append(newMovieElement)
-}
+  // handling deletion of the movie
+  newMovieElement.addEventListener('click', deleteMovieHandler.bind(null, id));
+  // selecting the parent element
+  const listRoot = document.getElementById('movie-list');
+  // insert the newly created element into the parent
+  listRoot.append(newMovieElement);
+};
 
 const updateUI = () => {
-    if(movies.length === 0) {
-        entryTextSection.style.display = 'block'
-    } else {
-        entryTextSection.style.display = 'none'
-    }
-}
+  if (movies.length === 0) {
+    entryTextSection.style.display = 'block';
+  } else {
+    entryTextSection.style.display = 'none';
+  }
+};
 
 // ---- 2.ADDING EVENT LISTENERS ----
 
@@ -54,9 +71,9 @@ const toggleBackdrop = () => {
 
 const clearMovieInput = () => {
   for (const userInput of userInputs) {
-      userInput.value = '';
+    userInput.value = '';
   }
-}
+};
 
 // 2.2. functions that goes directly into the event listeners
 const toggleMovieModal = () => {
@@ -89,6 +106,7 @@ const addMovieHandler = () => {
 
   // creating the new movie model
   const newMovie = {
+    id: Math.random().toString(),
     title: titleValue,
     image: imageValue,
     rating: ratingValue,
@@ -96,13 +114,18 @@ const addMovieHandler = () => {
   // push it into the state
   movies.push(newMovie);
   console.log(movies);
-  
+
   // close the modal
   toggleMovieModal();
   // clear inputs
   clearMovieInput();
   // receive data to be displayed into the screen
-  renderNewMovieElement(newMovie.title, newMovie.image, newMovie.rating);
+  renderNewMovieElement(
+    newMovie.id,
+    newMovie.title,
+    newMovie.image,
+    newMovie.rating
+  );
   // should be executed every time we add a movie
   updateUI();
 };
