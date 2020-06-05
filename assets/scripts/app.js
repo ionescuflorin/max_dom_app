@@ -11,11 +11,39 @@ const cancelAddMovieButton = addMovieModal.querySelector('.btn--passive');
 const confirmAddMovieButton = cancelAddMovieButton.nextElementSibling;
 const userInputs = addMovieModal.querySelectorAll('input');
 // const userInputs = addMovieModal.getElementsByTagName('input');
+const entryTextSection = document.getElementById('entry-text')
 
 // ---- 3. FUNCTIONALITY LOGIC ------
 
 // 3.1. declaring state
 const movies = [];
+
+const renderNewMovieElement = (title, imageUrl, rating) => {
+    const newMovieElement = document.createElement('li')
+    newMovieElement.className = 'movie-element';
+    newMovieElement.innerHTML = `
+        <div class='movie-element__image'>
+            <img src="${imageUrl}" alt=${title}/>
+        </div>
+        <div class='movie-element__info'>
+            <h2>${title}</h2>
+            <p>${rating}/5 stars</p>
+        </div>
+    `;
+
+    // selecting the parent element
+    const listRoot = document.getElementById('movie-list')
+    // insert the newly created element into the parent
+    listRoot.append(newMovieElement)
+}
+
+const updateUI = () => {
+    if(movies.length === 0) {
+        entryTextSection.style.display = 'block'
+    } else {
+        entryTextSection.style.display = 'none'
+    }
+}
 
 // ---- 2.ADDING EVENT LISTENERS ----
 
@@ -73,6 +101,10 @@ const addMovieHandler = () => {
   toggleMovieModal();
   // clear inputs
   clearMovieInput();
+  // receive data to be displayed into the screen
+  renderNewMovieElement(newMovie.title, newMovie.image, newMovie.rating);
+  // should be executed every time we add a movie
+  updateUI();
 };
 
 // 2.1. register event listeners
