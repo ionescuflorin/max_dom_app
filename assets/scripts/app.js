@@ -12,27 +12,39 @@ const confirmAddMovieButton = cancelAddMovieButton.nextElementSibling;
 const userInputs = addMovieModal.querySelectorAll('input');
 // const userInputs = addMovieModal.getElementsByTagName('input');
 const entryTextSection = document.getElementById('entry-text');
+const deleteMovieModal = document.getElementById('delete-modal');
 
 // ---- 3. FUNCTIONALITY LOGIC ------
 
 // 3.1. declaring state
 const movies = [];
 
-const deleteMovieHandler = (movieId) => {
-  // find the index from the movies array which it will the the random generated id
-  let movieIndex = 0;
-  for (const movie of movies) {
-    if (movie.id === movieId) {
-      break;
-    }
-    movieIndex++;
+const deleteMovie = () => {
+// find the index from the movies array which it will the the random generated id
+let movieIndex = 0;
+for (const movie of movies) {
+  if (movie.id === movieId) {
+    break;
   }
-console.log(movieIndex)
-  // remove the movie
-  movies.splice(movieIndex, 1);
-  const listRoot = document.getElementById('movie-list');
-  listRoot.children[movieIndex].remove();
-  // listRoot.removeChild(listRoot.children[movieIndex])
+  movieIndex++;
+}
+
+// remove the movie
+movies.splice(movieIndex, 1);
+const listRoot = document.getElementById('movie-list');
+listRoot.children[movieIndex].remove();
+// listRoot.removeChild(listRoot.children[movieIndex])
+}
+
+const closeMovieDeletionModal = () => {
+  toggleBackdrop();
+  deleteMovieModal.classList.remove('visible')
+}
+
+const deleteMovieHandler = (movieId) => {
+  deleteMovieModal.classList.add('visible')
+  toggleBackdrop();
+  // deleteMovie(movieId)
 }
 const renderNewMovieElement = (id, title, imageUrl, rating) => {
   const newMovieElement = document.createElement('li');
@@ -69,6 +81,10 @@ const toggleBackdrop = () => {
   backdrop.classList.toggle('visible');
 };
 
+const closeMovieModal = () => {
+  addMovieModal.classList.remove('visible');
+}
+
 const clearMovieInput = () => {
   for (const userInput of userInputs) {
     userInput.value = '';
@@ -76,15 +92,16 @@ const clearMovieInput = () => {
 };
 
 // 2.2. functions that goes directly into the event listeners
-const toggleMovieModal = () => {
-  addMovieModal.classList.toggle('visible');
+const showMovieModal = () => {
+  addMovieModal.classList.add('visible');
   toggleBackdrop();
 };
 const backtodropClickHandler = () => {
-  toggleMovieModal();
+  closeMovieModal();
+  closeMovieDeletionModal();
 };
 const cancelAddMovieHandler = () => {
-  toggleMovieModal();
+  closeMovieModal();
   clearMovieInput();
 };
 const addMovieHandler = () => {
@@ -116,7 +133,8 @@ const addMovieHandler = () => {
   console.log(movies);
 
   // close the modal
-  toggleMovieModal();
+  closeMovieModal();
+  toggleBackdrop();
   // clear inputs
   clearMovieInput();
   // receive data to be displayed into the screen
@@ -131,7 +149,7 @@ const addMovieHandler = () => {
 };
 
 // 2.1. register event listeners
-startMovieButton.addEventListener('click', toggleMovieModal);
+startMovieButton.addEventListener('click', showMovieModal);
 backdrop.addEventListener('click', backtodropClickHandler);
 cancelAddMovieButton.addEventListener('click', cancelAddMovieHandler);
 confirmAddMovieButton.addEventListener('click', addMovieHandler);
